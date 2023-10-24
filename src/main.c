@@ -1,15 +1,11 @@
 #include "main.h"
 
 int main(int argc, char *argv[]) {
-    static CHIP8 emulator = {0};
-
-    chip8_load_fonts(&emulator);
-
     SDL_Event event;
     SDL_Renderer *renderer;
     SDL_Window *window;
-    const uint16_t WINDOW_HEIGHT = 512;
-    const uint16_t WINDOW_WIDTH = 1024;
+    const uint16_t WINDOW_HEIGHT = 320;
+    const uint16_t WINDOW_WIDTH = 640;
 
     SDL_Init(SDL_INIT_VIDEO);
     SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer);

@@ -4,7 +4,21 @@
 
 #include "chip8.h"
 
-bool push(STACK *stack, uint8_t input) {
+/*
+ * Creates a new stack instance
+ */
+STACK *stack_new(void) {
+    static STACK stack = {0};
+    stack.top = -1;
+    stack.size = STACK_SIZE;
+
+    return &stack;
+}
+
+/*
+ * Basic operations for the stack
+ */
+bool stack_push(STACK *stack, uint8_t input) {
     if (stack->top == stack->size - 1) {
         return false;
     } else {
@@ -15,7 +29,7 @@ bool push(STACK *stack, uint8_t input) {
     }
 }
 
-bool pop(STACK *stack, uint8_t *popped) {
+bool stack_pop(STACK *stack, uint8_t *popped) {
     if (stack->top == -1) {
         return false;
     } else {
@@ -26,7 +40,7 @@ bool pop(STACK *stack, uint8_t *popped) {
     }
 }
 
-bool show(STACK *stack, uint8_t *contents) {
+bool stack_show(STACK *stack, uint8_t *contents) {
     if (stack->top == -1) {
         return false;
     } else {
@@ -36,6 +50,18 @@ bool show(STACK *stack, uint8_t *contents) {
 
         return true;
     }
+}
+
+/*
+ * Creates a new static CHIP-8 instance
+ */
+CHIP8 *chip8_new(void) {
+    static CHIP8 emulator = {0};
+    chip8_load_fonts(&emulator);
+    emulator.PC = 0x200;
+    emulator.stack = stack_new();
+
+    return &emulator;
 }
 
 /*

@@ -26,11 +26,13 @@ typedef struct {
 /*
  * STACK Associated Methods
  */
-bool push(STACK *stack, uint8_t input);
+STACK *stack_new(void);
 
-bool pop(STACK *stack, uint8_t *popped);
+bool stack_push(STACK *stack, uint8_t input);
 
-bool show(STACK *stack, uint8_t *contents);
+bool stack_pop(STACK *stack, uint8_t *popped);
+
+bool stack_show(STACK *stack, uint8_t *contents);
 
 
 typedef struct {
@@ -44,7 +46,7 @@ typedef struct {
     uint16_t PC;
 
     // Stack
-    STACK stack;
+    STACK *stack;
     uint8_t SP;
 
     // Memory (4 KB)
@@ -64,4 +66,6 @@ typedef struct {
 /*
  * CHIP-8 Associated Methods
 */
+CHIP8 *chip8_new(void);
+
 void chip8_load_fonts(CHIP8 *emulator);
