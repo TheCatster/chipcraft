@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <string.h>
 
 #define MEMORY_SIZE 4096
 #define V_REGISTERS_SIZE 16
@@ -41,3 +42,10 @@ typedef struct {
     // Display (64x32)
     bool display[DISPLAY_WIDTH][DISPLAY_HEIGHT];
 } CHIP8;
+
+/*
+ * CHIP-8 Associated Methods
+*/
+void chip8_load_fonts(CHIP8 *emulator);
+
+

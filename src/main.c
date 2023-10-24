@@ -1,7 +1,9 @@
 #include "main.h"
 
 int main(int argc, char *argv[]) {
-    CHIP8 emulator = {0};
+    static CHIP8 emulator = {0};
+
+    chip8_load_fonts(&emulator);
 
     SDL_Event event;
     SDL_Renderer *renderer;
