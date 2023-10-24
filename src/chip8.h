@@ -7,6 +7,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define MEMORY_SIZE 4096
 #define V_REGISTERS_SIZE 16
@@ -14,6 +16,22 @@
 #define KEYPAD_SIZE 16
 #define DISPLAY_WIDTH 64
 #define DISPLAY_HEIGHT 32
+
+typedef struct {
+    int top;
+    int array[STACK_SIZE];
+    int size;
+} STACK;
+
+/*
+ * STACK Associated Methods
+ */
+bool push(STACK *stack, uint8_t input);
+
+bool pop(STACK *stack, uint8_t *popped);
+
+bool show(STACK *stack, uint8_t *contents);
+
 
 typedef struct {
     // CPU registers (V0 - VF)
@@ -26,7 +44,7 @@ typedef struct {
     uint16_t PC;
 
     // Stack
-    uint16_t stack[STACK_SIZE];
+    STACK stack;
     uint8_t SP;
 
     // Memory (4 KB)
@@ -47,5 +65,3 @@ typedef struct {
  * CHIP-8 Associated Methods
 */
 void chip8_load_fonts(CHIP8 *emulator);
-
-

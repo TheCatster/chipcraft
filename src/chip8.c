@@ -4,6 +4,40 @@
 
 #include "chip8.h"
 
+bool push(STACK *stack, uint8_t input) {
+    if (stack->top == stack->size - 1) {
+        return false;
+    } else {
+        stack->top = stack->top + 1;
+        stack->array[stack->top] = input;
+
+        return true;
+    }
+}
+
+bool pop(STACK *stack, uint8_t *popped) {
+    if (stack->top == -1) {
+        return false;
+    } else {
+        *popped = stack->array[stack->top];
+        stack->top = stack->top - 1;
+
+        return true;
+    }
+}
+
+bool show(STACK *stack, uint8_t *contents) {
+    if (stack->top == -1) {
+        return false;
+    } else {
+        for (int i = stack->top; i >= 0; --i) {
+            contents[i] = stack->array[i];
+        }
+
+        return true;
+    }
+}
+
 /*
  * Load the CHIP-8 fonts into the expected location in RAM
  */
