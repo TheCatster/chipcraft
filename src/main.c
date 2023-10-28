@@ -1,27 +1,9 @@
 #include "main.h"
 
 int main(int argc, char *argv[]) {
-    SDL_Event event;
-    SDL_Renderer *renderer;
-    SDL_Window *window;
-    const uint16_t WINDOW_HEIGHT = 320;
-    const uint16_t WINDOW_WIDTH = 640;
-
-    SDL_Init(SDL_INIT_VIDEO);
-    SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer);
-
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-    SDL_RenderClear(renderer);
-    SDL_RenderPresent(renderer);
-
-    while (1) {
-        if (SDL_PollEvent(&event) && event.type == SDL_QUIT)
-            break;
-    }
-
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
+    initialize_graphics();
+    chip8_run();
 
     return EXIT_SUCCESS;
 }
+

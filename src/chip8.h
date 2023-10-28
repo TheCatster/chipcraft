@@ -4,11 +4,12 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <SDL2/SDL.h>
 #include <stdbool.h>
-#include <string.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define MEMORY_SIZE 4096
 #define V_REGISTERS_SIZE 16
@@ -34,7 +35,6 @@ bool stack_pop(STACK *stack, uint8_t *popped);
 
 bool stack_show(STACK *stack, uint8_t *contents);
 
-
 typedef struct {
     // CPU registers (V0 - VF)
     uint8_t V[V_REGISTERS_SIZE];
@@ -58,6 +58,7 @@ typedef struct {
 
     // Input
     bool keypad[KEYPAD_SIZE];
+    uint16_t keymap[KEYPAD_SIZE][2];
 
     // Display (64x32)
     bool display[DISPLAY_WIDTH][DISPLAY_HEIGHT];
@@ -65,7 +66,17 @@ typedef struct {
 
 /*
  * CHIP-8 Associated Methods
-*/
+ */
 CHIP8 *chip8_new(void);
 
+void chip8_run(void);
+
 void chip8_load_fonts(CHIP8 *emulator);
+
+void chip8_load_keymap(CHIP8 *emulator);
+
+void chip8_load_rom(CHIP8 *emulator);
+
+uint16_t chip8_fetch(CHIP8 *emulator);
+
+bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction);
