@@ -93,13 +93,13 @@ CHIP8 *chip8_new(void) {
 
 /**
  * @brief The main entrypoint for the emulator
- * @param void
+ * @param file_name: the name of the ROM file
  * @returns void
  */
-void chip8_run(void) {
+void chip8_run(char *file_name) {
     CHIP8 *emulator = chip8_new();
 
-    chip8_load_rom(emulator);
+    chip8_load_rom(emulator, file_name);
 
     while (true) {
         uint16_t instruction = chip8_fetch(emulator);
@@ -170,10 +170,31 @@ void chip8_load_keymap(CHIP8 *emulator) {
 /**
  * @brief Load a ROM into the emulator's memory
  * @param emulator: a pointer to the CHIP-8 emulator
- * @returns void
+ * @param filename: the name of the ROM file
+ * @returns a boolean indicating success
  */
-void chip8_load_rom(CHIP8 *emulator) {
+bool chip8_load_rom(CHIP8 *emulator, char *file_name) {
+    printf("Loading ROM\n");
 
+    FILE *fp = fopen(file_name, "rb");
+
+    if (fp == NULL) {
+        return false;
+    }
+    
+    struct stat st = {0};
+    stat(file_name, &st);
+    size_t f_size = st.st_size;
+
+    size_t bytes_read = fread(emulator->memory + 0x200, 1, sizeof(emulator->memory) - 0x200, fp);
+
+    fclose(fp);
+
+    if (bytes_read != f_size) {
+        return false;
+    }
+
+    return true;
 }
 
 /**
@@ -185,8 +206,8 @@ uint16_t chip8_fetch(CHIP8 *emulator) {
     uint16_t instruction = emulator->memory[emulator->PC] + emulator->memory[emulator->PC + 1];
     emulator->PC += 2;
 
-    printf("Instruction is: %d\n", instruction);
-    printf("PC is: %d\n", emulator->PC);
+    printf("Instruction is: 0x%04X\n", instruction);
+    printf("PC is: 0x%04X\n", emulator->PC);
 
     return instruction;
 }
@@ -198,21 +219,30 @@ uint16_t chip8_fetch(CHIP8 *emulator) {
  * @returns a boolean that indicates success
  */
 bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
-    uint8_t category = instruction & 0x0111;
-    uint8_t x = instruction & 0x1011;
-    uint8_t y = instruction & 0x1101;
-    uint8_t n = instruction & 0x1110;
+    uint16_t category = instruction & 0x0FFF;
+    uint16_t x = instruction & 0xF0FF;
+    uint16_t y = instruction & 0xFF0F;
+    uint16_t n = instruction & 0xFFF0;
     uint16_t nn = y | n;
     uint32_t nnn = x | y | n;
 
     switch (category) {
-        case 0x0: // Clear screen
+        case 0x0:
             switch (nnn) {
+                // 00E0: Clears the screen
                 case 0x0E0:
-                    printf("Woah, clearing screen!\n");
+                    printf("0x00E0 - Clearing screen");
+                    for (size_t i = 0; i < DISPLAY_HEIGHT; i++) {
+                        for (size_t j = 0; j < DISPLAY_WIDTH; j++) {
+                            emulator->display[j][i] = false;
+                        }
+                    }
+                    break;
+                default:
+                    printf("0x0%03X - Unknown instruction", nnn);
                     return false;
             }
-            return false;
+            break;
         case 0x1: // 1NNN - Jump
             return false;
         case 0x6: // 6XNN - Set register VX
@@ -224,7 +254,10 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
         case 0xD: // DXYN - Display/draw
             return false;
         default:
-            return true;
+            return false;
     }
+
+    // For the sake of testing, always quit after one loop.
+    return false;
 }
 
