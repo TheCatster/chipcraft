@@ -2,7 +2,7 @@
 // Created by daniil on 10/28/23.
 //
 
-#include "graphics.h"
+#include "../include/graphics.h"
 
 /**
  * @brief Initialize SDL2 for the emulator
