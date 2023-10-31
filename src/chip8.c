@@ -99,7 +99,11 @@ CHIP8 *chip8_new(void) {
 void chip8_run(char *file_name) {
     CHIP8 *emulator = chip8_new();
 
-    chip8_load_rom(emulator, file_name);
+    bool load = chip8_load_rom(emulator, file_name);
+    if (load == false) {
+        perror("ROM was not loaded successfully!");
+        return;
+    }
 
     while (true) {
         uint16_t instruction = chip8_fetch(emulator);
@@ -181,7 +185,7 @@ bool chip8_load_rom(CHIP8 *emulator, char *file_name) {
     if (fp == NULL) {
         return false;
     }
-    
+
     struct stat st = {0};
     stat(file_name, &st);
     size_t f_size = st.st_size;
@@ -193,6 +197,8 @@ bool chip8_load_rom(CHIP8 *emulator, char *file_name) {
     if (bytes_read != f_size) {
         return false;
     }
+
+    printf("Bytes read: %zu\n", bytes_read);
 
     return true;
 }
