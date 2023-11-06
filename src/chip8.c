@@ -216,8 +216,7 @@ uint16_t chip8_fetch(CHIP8 *emulator) {
     uint16_t instruction = emulator->memory[emulator->PC] + emulator->memory[emulator->PC + 1];
     emulator->PC += 2;
 
-    printf("Instruction is: 0x%04X\n", instruction);
-    printf("PC is: 0x%04X\n", emulator->PC);
+    printf("Instruction is: 0x%04X, PC is currently at: 0x%04X\n", instruction, emulator->PC);
 
     return instruction;
 }
@@ -248,26 +247,39 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
                         }
                     }
                     break;
+                // 00EE: Return from subroutine
+                case 0x0EE:;
+                    uint8_t pc = 0;
+
+                    bool pop_res = stack_pop(emulator->stack, &pc);
+                    if (pop_res == false) {
+                        return false;
+                    }
+
+                    emulator->PC = pc;
+                    break;
                 default:
                     printf("0x0%03X - Unknown instruction\n", nnn);
                     return false;
             }
             break;
-        case 0x1: // 1NNN - Jump
-            return false;
-        case 0x6: // 6XNN - Set register VX
-            return false;
-        case 0x7: // 7XNN - Add value to register VX
-            return false;
-        case 0xA: // ANNN - Set index register I
-            return false;
-        case 0xD: // DXYN - Display/draw
-            return false;
+        // 1NNN: Jump
+        case 0x1:
+            emulator->PC = nnn;
+            break;
+        // 0x2NNN: Call a subroutine
+        case 0x2:;
+            bool push_res = stack_push(emulator->stack, emulator->PC);
+            if (push_res == false) {
+                return false;
+            }
+
+            emulator->PC = nnn;
+            break;
         default:
             return false;
     }
 
-    // For the sake of testing, always quit after one loop.
-    return false;
+    return true;
 }
 
