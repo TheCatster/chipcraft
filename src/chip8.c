@@ -105,11 +105,15 @@ void chip8_run(char *file_name) {
         return;
     }
 
+    // For testing
+    uint8_t counter = 0;
+
     while (true) {
         uint16_t instruction = chip8_fetch(emulator);
         bool success = chip8_decode_execute(emulator, instruction);
+        counter++;
 
-        if (success == false) {
+        if (counter == 5) {
             break;
         }
     }
@@ -225,19 +229,19 @@ uint16_t chip8_fetch(CHIP8 *emulator) {
  * @returns a boolean that indicates success
  */
 bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
-    uint16_t category = instruction & 0x0FFF;
-    uint16_t x = instruction & 0xF0FF;
-    uint16_t y = instruction & 0xFF0F;
-    uint16_t n = instruction & 0xFFF0;
-    uint16_t nn = y | n;
-    uint32_t nnn = x | y | n;
+    uint16_t category = (instruction & 0xF000) >> 12;
+    uint16_t x = (instruction & 0x0F00) >> 8;
+    uint16_t y = (instruction & 0x00F0) >> 4;
+    uint16_t n = (instruction & 0x000F);
+    uint16_t nn = (y << 4) | n;
+    uint32_t nnn = (x << 8) | (y << 4) | n;
 
     switch (category) {
         case 0x0:
             switch (nnn) {
                 // 00E0: Clears the screen
                 case 0x0E0:
-                    printf("0x00E0 - Clearing screen");
+                    printf("0x00E0 - Clearing screen\n");
                     for (size_t i = 0; i < DISPLAY_HEIGHT; i++) {
                         for (size_t j = 0; j < DISPLAY_WIDTH; j++) {
                             emulator->display[j][i] = false;
@@ -245,7 +249,7 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
                     }
                     break;
                 default:
-                    printf("0x0%03X - Unknown instruction", nnn);
+                    printf("0x0%03X - Unknown instruction\n", nnn);
                     return false;
             }
             break;
