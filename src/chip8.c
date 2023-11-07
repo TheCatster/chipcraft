@@ -106,14 +106,18 @@ void chip8_run(char *file_name) {
     }
 
     // For testing
-    uint8_t counter = 0;
+    size_t counter = 0;
 
     while (true) {
         uint16_t instruction = chip8_fetch(emulator);
         bool success = chip8_decode_execute(emulator, instruction);
+        if (success == false) {
+
+        }
+
         counter++;
 
-        if (counter == 5) {
+        if (counter == 82) {
             break;
         }
     }
@@ -213,10 +217,8 @@ bool chip8_load_rom(CHIP8 *emulator, char *file_name) {
  * @returns a CHIP-8 instruction
  */
 uint16_t chip8_fetch(CHIP8 *emulator) {
-    uint16_t instruction = emulator->memory[emulator->PC] + emulator->memory[emulator->PC + 1];
+    uint16_t instruction = emulator->memory[emulator->PC] << 8 | emulator->memory[emulator->PC + 1];
     emulator->PC += 2;
-
-    printf("Instruction is: 0x%04X, PC is currently at: 0x%04X\n", instruction, emulator->PC);
 
     return instruction;
 }
@@ -228,18 +230,17 @@ uint16_t chip8_fetch(CHIP8 *emulator) {
  * @returns a boolean that indicates success
  */
 bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
-    uint16_t category = (instruction & 0xF000) >> 12;
-    uint16_t x = (instruction & 0x0F00) >> 8;
-    uint16_t y = (instruction & 0x00F0) >> 4;
-    uint16_t n = (instruction & 0x000F);
+    uint8_t category = (instruction & 0xF000) >> 12;
+    uint8_t x = (instruction & 0x0F00) >> 8;
+    uint8_t y = (instruction & 0x00F0) >> 4;
+    uint8_t n = (instruction & 0x000F);
     uint16_t nn = (y << 4) | n;
     uint32_t nnn = (x << 8) | (y << 4) | n;
 
     switch (category) {
         case 0x0:
             switch (nnn) {
-                // 00E0: Clears the screen
-                case 0x0E0:
+                case 0x0E0: // 00E0: Clears the screen
                     printf("0x00E0 - Clearing screen\n");
                     for (size_t i = 0; i < DISPLAY_HEIGHT; i++) {
                         for (size_t j = 0; j < DISPLAY_WIDTH; j++) {
@@ -247,8 +248,8 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
                         }
                     }
                     break;
-                // 00EE: Return from subroutine
-                case 0x0EE:;
+                case 0x0EE:; // 00EE: Return from subroutine
+                    printf("0x00EE - Returning from subroutine\n");
                     uint8_t pc = 0;
 
                     bool pop_res = stack_pop(emulator->stack, &pc);
@@ -259,16 +260,17 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
                     emulator->PC = pc;
                     break;
                 default:
-                    printf("0x0%03X - Unknown instruction\n", nnn);
+                    // This case doesn't matter for modern CHIP-8 emulators
+                    printf("0x%04X - Unknown instruction\n", instruction);
                     return false;
             }
             break;
-        // 1NNN: Jump
-        case 0x1:
+        case 0x1: // 1NNN: Jump
+            printf("0x1NNN - Jumping to 0x%04X\n", nnn);
             emulator->PC = nnn;
             break;
-        // 0x2NNN: Call a subroutine
-        case 0x2:;
+        case 0x2:; // 0x2NNN: Call a subroutine
+            printf("0x2NNN - Calling a subroutine\n");
             bool push_res = stack_push(emulator->stack, emulator->PC);
             if (push_res == false) {
                 return false;
@@ -276,10 +278,40 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
 
             emulator->PC = nnn;
             break;
+        case 0x3: // 0x3XNN: Skip if VX equals NN
+            printf("0x3XNN - Skipping if VX equals NN\n");
+            if (emulator->V[x] == nn) {
+                emulator->PC += 2;
+            }
+            break;
+        case 0x4: // 0x4XNN: Skip if VX does not equal NN
+            printf("0x4XNN - Skipping if VX does not equal NN\n");
+            if (emulator->V[x] != nn) {
+                emulator->PC += 2;
+            }
+            break;
+        case 0x5: // 0x5XY0: Skip if VX equals VY
+            printf("0x5XY0 - Skipping if VX equals VY\n");
+            if (emulator->V[x] == emulator->V[y]) {
+                emulator->PC += 2;
+            }
+            break;
+        case 0x6: // 0x6XNN: Set VX to NN
+            printf("0x6XNN - Setting VX to NN\n");
+            emulator->V[x] = nn;
+            break;
+        case 0x9: // 0x9XY0: Skip if VX does not equal VY
+            printf("0x9XY0 - Skipping if VX does not equal VY\n");
+            if (emulator->V[x] != emulator->V[y]) {
+                emulator->PC += 2;
+            }
+            break;
         default:
+            printf("0x%04X - Unknown instruction\n", instruction);
             return false;
     }
 
+    printf("PC is currently at: 0x%04X\n", emulator->PC);
+
     return true;
 }
-
