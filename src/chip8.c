@@ -117,7 +117,7 @@ void chip8_run(char *file_name) {
 
         counter++;
 
-        if (counter == 82) {
+        if (counter == 25) {
             break;
         }
     }
@@ -299,6 +299,45 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
         case 0x6: // 0x6XNN: Set VX to NN
             printf("0x6XNN - Setting VX to NN\n");
             emulator->V[x] = nn;
+            break;
+        case 0x7: // 0x7XNN: Add NN to VX
+            printf("0x7XNN - Adding NN to VX\n");
+            emulator->V[x] += nn;
+            break;
+        case 0x8:
+            switch (n) {
+                case 0x0: // 8XY0
+                    printf("8XY0\n");
+                    break;
+                case 0x1:; // 8XY1
+                    printf("8XY1\n");
+                    break;
+                case 0x2: // 8XY2
+                    printf("8XY2\n");
+                    break;
+                case 0x3:; // 8XY3
+                    printf("8XY3\n");
+                    break;
+                case 0x4: // 8XY4
+                    printf("8XY4\n");
+                    break;
+                case 0x5:; // 8XY5
+                    printf("8XY5\n");
+                    break;
+                case 0x6: // 8XY6
+                    printf("8XY6\n");
+                    break;
+                case 0x7:; // 8XY7
+                    printf("8XY7\n");
+                    break;
+                case 0xE:; // 8XYE
+                    printf("8XYE\n");
+                    break;
+                default:
+                    // This case doesn't exist!
+                    printf("0x%04X - Unknown instruction\n", instruction);
+                    return false;
+            }
             break;
         case 0x9: // 0x9XY0: Skip if VX does not equal VY
             printf("0x9XY0 - Skipping if VX does not equal VY\n");
