@@ -413,6 +413,27 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
                 y++;
             }
             break;
+        case 0xE:
+            switch (y) {
+                case 0x9: // EX9E: Skip if key is pressed
+                    printf("EX9E: Skipping if key is pressed\n");
+                    if (emulator->keypad[emulator->V[x]] == true) {
+                        emulator->PC += 2;
+                    }
+                    break;
+                case 0xA:; // EXA1: Skip if key is not pressed
+                    printf("EXA1: Skipping if key is not pressed\n");
+                    if (emulator->keypad[emulator->V[x]] == false) {
+                        emulator->PC += 2;
+                    }
+                    break;
+                    break;
+                default:
+                    // This case doesn't exist!
+                    printf("0x%04X - Unknown instruction\n", instruction);
+                    return false;
+            }
+            break;
         default:
             printf("0x%04X - Unknown instruction\n", instruction);
             return false;
