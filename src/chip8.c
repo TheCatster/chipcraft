@@ -374,12 +374,15 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
                     return false;
             }
             break;
-        case 0x9: // 0x9XY0: Skip if VX does not equal VY
+        case 0x9: // 9XY0: Skip if VX does not equal VY
             printf("0x9XY0 - Skipping if VX does not equal VY\n");
             if (emulator->V[x] != emulator->V[y]) {
                 emulator->PC += 2;
             }
             break;
+        case 0xA: // ANNN: Set index register
+            printf("0xANNN - Setting index register to NNN\n");
+            emulator->I = nnn;
         default:
             printf("0x%04X - Unknown instruction\n", instruction);
             return false;
