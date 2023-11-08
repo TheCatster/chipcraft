@@ -383,9 +383,11 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
         case 0xA: // ANNN: Set index register
             printf("0xANNN - Setting index register to NNN\n");
             emulator->I = nnn;
+            break;
         case 0xB: // BNNN: Jump with offset
             printf("0xBNNN - Jumping with offset\n");
             emulator->PC += nnn + emulator->V[0];
+            break;
         default:
             printf("0x%04X - Unknown instruction\n", instruction);
             return false;
