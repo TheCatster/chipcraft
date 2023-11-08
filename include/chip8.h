@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include "../include/log.h"
 
 #define MEMORY_SIZE 4096
 #define V_REGISTERS_SIZE 16
@@ -81,3 +82,5 @@ bool chip8_load_rom(CHIP8 *emulator, char *file_name);
 uint16_t chip8_fetch(CHIP8 *emulator);
 
 bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction);
+
+void chip8_draw(CHIP8 *emulator);

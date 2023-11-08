@@ -12,6 +12,8 @@ add_executable(chipcraft src/main.c
         include/chip8.h
         src/graphics.c
         include/graphics.h
+        src/log.c
+        include/log.h
 )
 
 target_link_libraries(chipcraft ${SDL2_LIBRARIES})
