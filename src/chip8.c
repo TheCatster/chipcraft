@@ -447,7 +447,12 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
                     printf("FX18: Setting the sound timer to VX\n");
                     emulator->sound_timer = emulator->V[x];
                     break;
-                case 0x1E:; // FX1E:
+                case 0x1E:; // FX1E: Add VX to I
+                    if (emulator->I + emulator->V[x] > 0x1000) {
+                        emulator->V[0xF] = 1;
+                    }
+
+                    emulator->I += emulator->V[x];
                     break;
                 case 0x29:; // FX29:
                     break;
