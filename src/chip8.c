@@ -393,6 +393,26 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
             uint8_t random = rand() % nn + 1; // Rand has limited randomness, but it's okay for this application
             emulator->V[x] = nn & random;
             break;
+        case 0xD: // DXYN: Display
+            printf("0xDXYN - Displaying sprite\n");
+            // This can be done with modulo, but bitwise AND should be the same speed or better in most cases
+            uint16_t xc = emulator->V[x] & 63;
+            uint16_t yc = emulator->V[y] & 31;
+            emulator->V[0xF] = 0;
+            for (size_t i = 0; i < DISPLAY_HEIGHT; i++) {
+                uint16_t sprite_data = emulator->I + i;
+                for (size_t j = 0; j < 8; j++) {
+                    if (emulator->display[i][j] == true && emulator->display[x][y] == true) {
+                        emulator->display[i][j] = false;
+                        emulator->V[0xF] = 1;
+                    } else if (emulator->display[i][j] == true && emulator->display[x][y] == false) {
+                        emulator->display[x][y] = true;
+                    }
+                    x++;
+                }
+                y++;
+            }
+            break;
         default:
             printf("0x%04X - Unknown instruction\n", instruction);
             return false;
