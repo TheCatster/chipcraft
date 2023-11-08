@@ -399,18 +399,20 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
             uint16_t xc = emulator->V[x] & 63;
             uint16_t yc = emulator->V[y] & 31;
             emulator->V[0xF] = 0;
-            for (size_t i = 0; i < DISPLAY_HEIGHT; i++) {
-                uint16_t sprite_data = emulator->I + i;
-                for (size_t j = 0; j < 8; j++) {
-                    if (emulator->display[i][j] == true && emulator->display[x][y] == true) {
-                        emulator->display[i][j] = false;
-                        emulator->V[0xF] = 1;
-                    } else if (emulator->display[i][j] == true && emulator->display[x][y] == false) {
-                        emulator->display[x][y] = true;
+
+            for (size_t row = 0; row < n; row++) {
+                uint16_t pixel = emulator->memory[emulator->I + row];
+                for (size_t bit = 0; bit < 8; bit++) {
+                    if ((pixel & (0x80 >> bit)) != 0) {
+
+                        if (emulator->display[xc + bit][yc + row] == true) {
+                            emulator->V[0xF] = 1;
+                        }
+
+                        // set pixel value by using XOR
+                        emulator->display[xc + bit][yc + row] ^= 1;
                     }
-                    x++;
                 }
-                y++;
             }
             break;
         case 0xE:
