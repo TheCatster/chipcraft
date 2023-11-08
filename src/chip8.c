@@ -437,7 +437,15 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
                     printf("FX07: Setting VX to the delay timer\n");
                     emulator->V[x] = emulator->delay_timer;
                     break;
-                case 0x0A:; // FX0A:
+                case 0x0A:; // FX0A: Wait for key
+                    printf("FX0A: Waiting for keypress\n");
+                    for (size_t i = 0; i < KEYPAD_SIZE; i++) {
+                        if (emulator->keypad[i]) {
+                            emulator->V[x] = i;
+                            return true;
+                        }
+                    }
+                    emulator->PC -= 2;
                     break;
                 case 0x15:; // FX15: Set the delay timer to VX
                     printf("FX15: Setting the delay timer to VX\n");
@@ -448,6 +456,7 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
                     emulator->sound_timer = emulator->V[x];
                     break;
                 case 0x1E:; // FX1E: Add VX to I
+                    printf("FX1E: Adding VX to I\n");
                     if (emulator->I + emulator->V[x] > 0x1000) {
                         emulator->V[0xF] = 1;
                     }
