@@ -388,6 +388,11 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
             printf("0xBNNN - Jumping with offset\n");
             emulator->PC += nnn + emulator->V[0];
             break;
+        case 0xC: // CXNN: Random
+            printf("0xCXNN - Generating random number\n");
+            uint8_t random = rand() % nn + 1; // Rand has limited randomness, but it's okay for this application
+            emulator->V[x] = nn & random;
+            break;
         default:
             printf("0x%04X - Unknown instruction\n", instruction);
             return false;
