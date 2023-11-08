@@ -111,15 +111,11 @@ void chip8_run(char *file_name) {
     while (true) {
         uint16_t instruction = chip8_fetch(emulator);
         bool success = chip8_decode_execute(emulator, instruction);
-        if (success == false) {
-
+        if (success == false || counter == 25) {
+            break;
         }
 
         counter++;
-
-        if (counter == 25) {
-            break;
-        }
     }
 }
 
@@ -258,8 +254,8 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
                     break;
                 default:
                     // This case doesn't matter for modern CHIP-8 emulators
-                    printf("0x%04X - Unknown instruction\n", instruction);
-                    return false;
+                    printf("0x%04X - Unnecessary instruction\n", instruction);
+                    break;
             }
             break;
         case 0x1: // 1NNN: Jump
@@ -429,6 +425,37 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
                         emulator->PC += 2;
                     }
                     break;
+                default:
+                    // This case doesn't exist!
+                    printf("0x%04X - Unknown instruction\n", instruction);
+                    return false;
+            }
+            break;
+        case 0xF:
+            switch (nn) {
+                case 0x07: // FX07: Set VX to the delay timer
+                    printf("FX07: Setting VX to the delay timer\n");
+                    emulator->V[x] = emulator->delay_timer;
+                    break;
+                case 0x0A:; // FX0A:
+                    break;
+                case 0x15:; // FX15: Set the delay timer to VX
+                    printf("FX15: Setting the delay timer to VX\n");
+                    emulator->delay_timer = emulator->V[x];
+                    break;
+                case 0x18:; // FX18: Set the sound timer to VX
+                    printf("FX18: Setting the sound timer to VX\n");
+                    emulator->sound_timer = emulator->V[x];
+                    break;
+                case 0x1E:; // FX1E:
+                    break;
+                case 0x29:; // FX29:
+                    break;
+                case 0x33:; // FX33:
+                    break;
+                case 0x55:; // FX55:
+                    break;
+                case 0x65:; // FX65:
                     break;
                 default:
                     // This case doesn't exist!
