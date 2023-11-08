@@ -30,11 +30,11 @@ STACK *stack_new(void) {
  * @param input: the value to push onto the stack
  * @return a boolean that indicates success
  */
-bool stack_push(STACK *stack, uint8_t input) {
+bool stack_push(STACK *stack, uint16_t input) {
     if (stack->top == stack->size - 1) {
         return false;
     } else {
-        stack->top = stack->top + 1;
+        stack->top++;
         stack->array[stack->top] = input;
 
         return true;
@@ -47,30 +47,12 @@ bool stack_push(STACK *stack, uint8_t input) {
  * @param popped: a pointer to the number that was popped
  * @return a boolean that indicates success
  */
-bool stack_pop(STACK *stack, uint8_t *popped) {
+bool stack_pop(STACK *stack, uint16_t *popped) {
     if (stack->top == -1) {
         return false;
     } else {
         *popped = stack->array[stack->top];
-        stack->top = stack->top - 1;
-
-        return true;
-    }
-}
-
-/**
- * @brief Show the contents of the stack
- * @param stack: pointer to the stack
- * @param contents: the array containing the contents of the stack
- * @return a boolean that indicates success
- */
-bool stack_show(STACK *stack, uint8_t *contents) {
-    if (stack->top == -1) {
-        return false;
-    } else {
-        for (int i = stack->top; i >= 0; --i) {
-            contents[i] = stack->array[i];
-        }
+        stack->top--;
 
         return true;
     }
@@ -97,32 +79,168 @@ CHIP8 *chip8_new(void) {
  * @returns void
  */
 void chip8_run(char *file_name) {
+    SDL_Texture *screen = NULL;
+    SDL_Renderer *renderer = NULL;
+    SDL_Window *window = NULL;
+    SDL_Event event;
+    int16_t speed = 20;
+    bool quit = false;
     CHIP8 *emulator = chip8_new();
+
+    initialize_graphics(&screen, &renderer, &window);
 
     bool load = chip8_load_rom(emulator, file_name);
     if (load == false) {
         perror("ROM was not loaded successfully!");
+        deinitialize_graphics(screen, renderer, window);
         return;
     }
 
-    // For testing
-    size_t counter = 0;
+    while (quit == false) {
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+                case SDL_QUIT:
+                    quit = true;
+                    break;
+                case SDL_KEYDOWN:
+                    switch (event.key.keysym.sym) {
+                        case SDLK_ESCAPE:
+                            quit = true;
+                            break;
+                        case SDLK_F1:
+                            break;
+                        case SDLK_F2:
+                            speed -= 1;
+                            break;
+                        case SDLK_F3:
+                            speed += 1;
+                            break;
+                        case SDLK_x:
+                            emulator->keypad[0] = true;
+                            break;
+                        case SDLK_1:
+                            emulator->keypad[1] = true;
+                            break;
+                        case SDLK_2:
+                            emulator->keypad[2] = true;
+                            break;
+                        case SDLK_3:
+                            emulator->keypad[3] = true;
+                            break;
+                        case SDLK_q:
+                            emulator->keypad[4] = true;
+                            break;
+                        case SDLK_w:
+                            emulator->keypad[5] = true;
+                            break;
+                        case SDLK_e:
+                            emulator->keypad[6] = true;
+                            break;
+                        case SDLK_a:
+                            emulator->keypad[7] = true;
+                            break;
+                        case SDLK_s:
+                            emulator->keypad[8] = true;
+                            break;
+                        case SDLK_d:
+                            emulator->keypad[9] = true;
+                            break;
+                        case SDLK_z:
+                            emulator->keypad[0xA] = true;
+                            break;
+                        case SDLK_c:
+                            emulator->keypad[0xB] = true;
+                            break;
+                        case SDLK_4:
+                            emulator->keypad[0xC] = true;
+                            break;
+                        case SDLK_r:
+                            emulator->keypad[0xD] = true;
+                            break;
+                        case SDLK_f:
+                            emulator->keypad[0xE] = true;
+                            break;
+                        case SDLK_v:
+                            emulator->keypad[0xF] = true;
+                            break;
+                    }
+                    break;
+                case SDL_KEYUP:
+                    switch (event.key.keysym.sym) {
+                        case SDLK_x:
+                            emulator->keypad[0] = false;
+                            break;
+                        case SDLK_1:
+                            emulator->keypad[1] = false;
+                            break;
+                        case SDLK_2:
+                            emulator->keypad[2] = false;
+                            break;
+                        case SDLK_3:
+                            emulator->keypad[3] = false;
+                            break;
+                        case SDLK_q:
+                            emulator->keypad[4] = false;
+                            break;
+                        case SDLK_w:
+                            emulator->keypad[5] = false;
+                            break;
+                        case SDLK_e:
+                            emulator->keypad[6] = false;
+                            break;
+                        case SDLK_a:
+                            emulator->keypad[7] = false;
+                            break;
+                        case SDLK_s:
+                            emulator->keypad[8] = false;
+                            break;
+                        case SDLK_d:
+                            emulator->keypad[9] = false;
+                            break;
+                        case SDLK_z:
+                            emulator->keypad[0xA] = false;
+                            break;
+                        case SDLK_c:
+                            emulator->keypad[0xB] = false;
+                            break;
+                        case SDLK_4:
+                            emulator->keypad[0xC] = false;
+                            break;
+                        case SDLK_r:
+                            emulator->keypad[0xD] = false;
+                            break;
+                        case SDLK_f:
+                            emulator->keypad[0xE] = false;
+                            break;
+                        case SDLK_v:
+                            emulator->keypad[0xF] = false;
+                            break;
+                    }
+                    break;
+            }
+            break;
+        }
 
-    while (true) {
-        system("clear");
+        if (speed < 0) {
+            speed = 0;
+        } else {
+            SDL_Delay(speed);
+        }
+
         uint16_t instruction = chip8_fetch(emulator);
         bool success = chip8_decode_execute(emulator, instruction);
         if (success == false) {
-            break;
+            log_error("There was a failure!");
         }
 
-        chip8_draw();
-
-        if (counter == 25) {
-            break;
+        if (emulator->delay_timer > 0) {
+            emulator->delay_timer--;
         }
-        counter++;
+
+        chip8_draw(emulator, screen, renderer);
     }
+
+    deinitialize_graphics(screen, renderer, window);
 }
 
 /**
@@ -246,10 +364,11 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
                             emulator->display[j][i] = false;
                         }
                     }
+                    emulator->draw_flag = true;
                     break;
-                case 0x0EE:; // 00EE: Return from subroutine
+                case 0x0EE: // 00EE: Return from subroutine
                     log_info("0x00EE - Returning from subroutine\n");
-                    uint8_t pc = 0;
+                    uint16_t pc = 0;
 
                     bool pop_res = stack_pop(emulator->stack, &pc);
                     if (pop_res == false) {
@@ -268,7 +387,7 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
             log_info("0x1NNN - Jumping to 0x%04X\n", nnn);
             emulator->PC = nnn;
             break;
-        case 0x2:; // 0x2NNN: Call a subroutine
+        case 0x2: // 0x2NNN: Call a subroutine
             log_info("0x2NNN - Calling a subroutine\n");
             bool push_res = stack_push(emulator->stack, emulator->PC);
             if (push_res == false) {
@@ -309,7 +428,7 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
                     log_info("8XY0: Setting VX to VY\n");
                     emulator->V[x] = emulator->V[y];
                     break;
-                case 0x1:; // 8XY1: Binary OR
+                case 0x1: // 8XY1: Binary OR
                     log_info("8XY1: Binary OR of VX and VY\n");
                     emulator->V[x] |= emulator->V[y];
                     break;
@@ -317,7 +436,7 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
                     log_info("8XY2: Binary AND of VX and VY\n");
                     emulator->V[x] &= emulator->V[y];
                     break;
-                case 0x3:; // 8XY3: Binary XOR
+                case 0x3: // 8XY3: Binary XOR
                     log_info("8XY3: Binary XOR of VX and VY\n");
                     emulator->V[x] ^= emulator->V[y];
                     break;
@@ -330,7 +449,7 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
                     }
                     emulator->V[x] += emulator->V[y];
                     break;
-                case 0x5:; // 8XY5: Subtract VY from VX
+                case 0x5: // 8XY5: Subtract VY from VX
                     log_info("8XY5: Subtracting VY from VX\n");
                     if (emulator->V[x] > emulator->V[y]) {
                         emulator->V[0xF] = 1;
@@ -350,7 +469,7 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
                         emulator->V[0xF] = 0;
                     }
                     break;
-                case 0x7:; // 8XY7: Subtract VX from VY
+                case 0x7: // 8XY7: Subtract VX from VY
                     log_info("8XY7: Subtracting VX from VY\n");
                     if (emulator->V[y] > emulator->V[x]) {
                         emulator->V[0xF] = 1;
@@ -359,7 +478,7 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
                     }
                     emulator->V[x] = emulator->V[y] - emulator->V[x];
                     break;
-                case 0xE:; // 8XYE: Shift left
+                case 0xE: // 8XYE: Shift left
                     log_info("8XYE: Shifting left\n");
                     emulator->V[x] = emulator->V[y];
                     uint8_t shft_l = emulator->V[x] & 0x000F;
@@ -416,6 +535,7 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
                     }
                 }
             }
+            emulator->draw_flag = true;
             break;
         case 0xE:
             switch (y) {
@@ -425,7 +545,7 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
                         emulator->PC += 2;
                     }
                     break;
-                case 0xA:; // EXA1: Skip if key is not pressed
+                case 0xA: // EXA1: Skip if key is not pressed
                     log_info("EXA1: Skipping if key is not pressed\n");
                     if (emulator->keypad[emulator->V[x]] == false) {
                         emulator->PC += 2;
@@ -443,7 +563,7 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
                     log_info("FX07: Setting VX to the delay timer\n");
                     emulator->V[x] = emulator->delay_timer;
                     break;
-                case 0x0A:; // FX0A: Wait for key
+                case 0x0A: // FX0A: Wait for key
                     log_info("FX0A: Waiting for keypress\n");
                     for (size_t i = 0; i < KEYPAD_SIZE; i++) {
                         if (emulator->keypad[i]) {
@@ -453,15 +573,15 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
                     }
                     emulator->PC -= 2;
                     break;
-                case 0x15:; // FX15: Set the delay timer to VX
+                case 0x15: // FX15: Set the delay timer to VX
                     log_info("FX15: Setting the delay timer to VX\n");
                     emulator->delay_timer = emulator->V[x];
                     break;
-                case 0x18:; // FX18: Set the sound timer to VX
+                case 0x18: // FX18: Set the sound timer to VX
                     log_info("FX18: Setting the sound timer to VX\n");
                     emulator->sound_timer = emulator->V[x];
                     break;
-                case 0x1E:; // FX1E: Add VX to I
+                case 0x1E: // FX1E: Add VX to I
                     log_info("FX1E: Adding VX to I\n");
                     if (emulator->I + emulator->V[x] > 0x1000) {
                         emulator->V[0xF] = 1;
@@ -469,11 +589,11 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
 
                     emulator->I += emulator->V[x];
                     break;
-                case 0x29:; // FX29: Set I to font character address
+                case 0x29: // FX29: Set I to font character address
                     log_info("FX29: Setting I to a character address\n");
                     emulator->I = emulator->V[x];
                     break;
-                case 0x33:; // FX33: Convert hex to decimal
+                case 0x33: // FX33: Convert hex to decimal
                     log_info("FX33: Converting hex to decimal\n");
                     uint8_t digit_one = emulator->V[x] % 10;
                     uint8_t digit_two = (emulator->V[x] / 10) % 10;
@@ -483,13 +603,13 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
                     emulator->memory[emulator->I + 1] = digit_two;
                     emulator->memory[emulator->I + 2] = digit_three;
                     break;
-                case 0x55:; // FX55: Store variable registers in memory
+                case 0x55: // FX55: Store variable registers in memory
                     log_info("FX55: Storing variable registers in memory\n");
                     for (size_t i = 0; i < x; i++) {
                         emulator->memory[emulator->I + i] = emulator->V[i];
                     }
                     break;
-                case 0x65:; // FX65: Store memory in variable registers
+                case 0x65: // FX65: Store memory in variable registers
                     log_info("FX65: Storing memory in variable registers\n");
                     for (size_t i = 0; i < x; i++) {
                         emulator->V[i] = emulator->memory[emulator->I + i];
@@ -511,6 +631,25 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
     return true;
 }
 
-void chip8_draw(CHIP8 *emulator) {
+/**
+ * @brief Draws the screen based on the emulator
+ * @param emulator: a pointer to the CHIP-8 emulator
+ */
+void chip8_draw(CHIP8 *emulator, SDL_Texture *screen, SDL_Renderer *renderer) {
+    if (emulator->draw_flag == true) {
+        uint32_t pixels[DISPLAY_WIDTH * DISPLAY_HEIGHT];
+        unsigned int x, y;
 
+        memset(pixels, 0, (DISPLAY_WIDTH * DISPLAY_HEIGHT) * 4);
+        for (x = 0; x < DISPLAY_WIDTH; x++) {
+            for (y = 0; y < DISPLAY_HEIGHT; y++) {
+                if (emulator->display[x][y] == true) {
+                    pixels[(x) + ((y) * DISPLAY_WIDTH)] = UINT32_MAX;
+                }
+            }
+        }
+
+        update_graphics(screen, renderer, pixels);
+    }
+    emulator->draw_flag = false;
 }

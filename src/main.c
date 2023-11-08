@@ -6,6 +6,7 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
+    // Debug file
     FILE *fp = fopen("chipcraft.log", "w+");
     if (!fp) {
         perror("File opening failed");
@@ -15,7 +16,7 @@ int main(int argc, char *argv[]) {
     log_add_fp(fp, 0);
     log_set_quiet(true);
 
-    initialize_graphics();
+    // Start the emulator
     chip8_run(argv[1]);
 
     return EXIT_SUCCESS;

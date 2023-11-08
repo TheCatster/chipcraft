@@ -12,6 +12,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include "../include/log.h"
+#include "graphics.h"
 
 #define MEMORY_SIZE 4096
 #define V_REGISTERS_SIZE 16
@@ -21,9 +22,9 @@
 #define DISPLAY_HEIGHT 32
 
 typedef struct {
-    int top;
-    int array[STACK_SIZE];
-    int size;
+    size_t top;
+    uint16_t array[STACK_SIZE];
+    size_t size;
 } STACK;
 
 /*
@@ -31,11 +32,9 @@ typedef struct {
  */
 STACK *stack_new(void);
 
-bool stack_push(STACK *stack, uint8_t input);
+bool stack_push(STACK *stack, uint16_t input);
 
-bool stack_pop(STACK *stack, uint8_t *popped);
-
-bool stack_show(STACK *stack, uint8_t *contents);
+bool stack_pop(STACK *stack, uint16_t *popped);
 
 typedef struct {
     // CPU registers (V0 - VF)
@@ -64,6 +63,7 @@ typedef struct {
 
     // Display (64x32)
     bool display[DISPLAY_WIDTH][DISPLAY_HEIGHT];
+    bool draw_flag;
 } CHIP8;
 
 /*
@@ -83,4 +83,4 @@ uint16_t chip8_fetch(CHIP8 *emulator);
 
 bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction);
 
-void chip8_draw(CHIP8 *emulator);
+void chip8_draw(CHIP8 *emulator, SDL_Texture *screen, SDL_Renderer *renderer);

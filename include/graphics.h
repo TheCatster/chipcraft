@@ -9,4 +9,8 @@
 #define WINDOW_HEIGHT 320
 #define WINDOW_WIDTH 640
 
-void initialize_graphics(void);
+void initialize_graphics(SDL_Texture **screen, SDL_Renderer **renderer, SDL_Window **window);
+
+void deinitialize_graphics(SDL_Texture *screen, SDL_Renderer *renderer, SDL_Window *window);
+
+void update_graphics(SDL_Texture *screen, SDL_Renderer *renderer, uint32_t *pixels);

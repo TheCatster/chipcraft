@@ -10,8 +10,3 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include "chip8.h"
-#include "graphics.h"
-
-
-
-
