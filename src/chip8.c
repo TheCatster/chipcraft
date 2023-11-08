@@ -143,7 +143,7 @@ void chip8_load_fonts(CHIP8 *emulator) {
                          0xF0, 0x80, 0xF0, 0x80, 0x80  // F
     };
 
-    memcpy(emulator->memory + 0x50, fonts, 80);
+    memcpy(emulator->memory, fonts, 80);
 }
 
 /**
@@ -463,13 +463,31 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
 
                     emulator->I += emulator->V[x];
                     break;
-                case 0x29:; // FX29:
+                case 0x29:; // FX29: Set I to font character address
+                    printf("FX29: Setting I to a character address\n");
+                    emulator->I = emulator->V[x];
                     break;
-                case 0x33:; // FX33:
+                case 0x33:; // FX33: Convert hex to decimal
+                    printf("FX33: Converting hex to decimal\n");
+                    uint8_t digit_one = emulator->V[x] % 10;
+                    uint8_t digit_two = (emulator->V[x] / 10) % 10;
+                    uint8_t digit_three = (emulator->V[x] / 100) % 10;
+
+                    emulator->memory[emulator->I] = digit_one;
+                    emulator->memory[emulator->I + 1] = digit_two;
+                    emulator->memory[emulator->I + 2] = digit_three;
                     break;
-                case 0x55:; // FX55:
+                case 0x55:; // FX55: Store variable registers in memory
+                    printf("FX55: Storing variable registers in memory\n");
+                    for (size_t i = 0; i < x; i++) {
+                        emulator->memory[emulator->I + i] = emulator->V[i];
+                    }
                     break;
-                case 0x65:; // FX65:
+                case 0x65:; // FX65: Store memory in variable registers
+                    printf("FX65: Storing memory in variable registers\n");
+                    for (size_t i = 0; i < x; i++) {
+                        emulator->V[i] = emulator->memory[emulator->I + i];
+                    }
                     break;
                 default:
                     // This case doesn't exist!
