@@ -129,23 +129,22 @@ void chip8_run(char *file_name) {
  * @returns void
  */
 void chip8_load_fonts(CHIP8 *emulator) {
-    uint8_t fonts[80] = {
-            0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
-            0x20, 0x60, 0x20, 0x20, 0x70, // 1
-            0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
-            0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
-            0x90, 0x90, 0xF0, 0x10, 0x10, // 4
-            0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
-            0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
-            0xF0, 0x10, 0x20, 0x40, 0x40, // 7
-            0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
-            0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
-            0xF0, 0x90, 0xF0, 0x90, 0x90, // A
-            0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
-            0xF0, 0x80, 0x80, 0x80, 0xF0, // C
-            0xE0, 0x90, 0x90, 0x90, 0xE0, // D
-            0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
-            0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+    uint8_t fonts[80] = {0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+                         0x20, 0x60, 0x20, 0x20, 0x70, // 1
+                         0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+                         0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+                         0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+                         0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+                         0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+                         0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+                         0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+                         0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+                         0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+                         0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+                         0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+                         0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+                         0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+                         0xF0, 0x80, 0xF0, 0x80, 0x80  // F
     };
 
     memcpy(emulator->memory + 0x50, fonts, 80);
@@ -157,24 +156,22 @@ void chip8_load_fonts(CHIP8 *emulator) {
  * @returns void
  */
 void chip8_load_keymap(CHIP8 *emulator) {
-    uint16_t keymap[KEYPAD_SIZE][2] = {
-            {SDL_SCANCODE_1, 0x1},
-            {SDL_SCANCODE_2, 0x2},
-            {SDL_SCANCODE_3, 0x3},
-            {SDL_SCANCODE_4, 0xC},
-            {SDL_SCANCODE_Q, 0x4},
-            {SDL_SCANCODE_W, 0x5},
-            {SDL_SCANCODE_E, 0x6},
-            {SDL_SCANCODE_R, 0xD},
-            {SDL_SCANCODE_A, 0x7},
-            {SDL_SCANCODE_S, 0x8},
-            {SDL_SCANCODE_D, 0x9},
-            {SDL_SCANCODE_F, 0xE},
-            {SDL_SCANCODE_Z, 0xA},
-            {SDL_SCANCODE_X, 0x0},
-            {SDL_SCANCODE_C, 0xB},
-            {SDL_SCANCODE_V, 0xF},
-    };
+    uint16_t keymap[KEYPAD_SIZE][2] = {{SDL_SCANCODE_1, 0x1},
+                                       {SDL_SCANCODE_2, 0x2},
+                                       {SDL_SCANCODE_3, 0x3},
+                                       {SDL_SCANCODE_4, 0xC},
+                                       {SDL_SCANCODE_Q, 0x4},
+                                       {SDL_SCANCODE_W, 0x5},
+                                       {SDL_SCANCODE_E, 0x6},
+                                       {SDL_SCANCODE_R, 0xD},
+                                       {SDL_SCANCODE_A, 0x7},
+                                       {SDL_SCANCODE_S, 0x8},
+                                       {SDL_SCANCODE_D, 0x9},
+                                       {SDL_SCANCODE_F, 0xE},
+                                       {SDL_SCANCODE_Z, 0xA},
+                                       {SDL_SCANCODE_X, 0x0},
+                                       {SDL_SCANCODE_C, 0xB},
+                                       {SDL_SCANCODE_V, 0xF},};
 
     memcpy(emulator->keymap, keymap, KEYPAD_SIZE);
 }
@@ -306,32 +303,70 @@ bool chip8_decode_execute(CHIP8 *emulator, uint16_t instruction) {
             break;
         case 0x8:
             switch (n) {
-                case 0x0: // 8XY0
-                    printf("8XY0\n");
+                case 0x0: // 8XY0: Set VX to VY
+                    printf("8XY0: Setting VX to VY\n");
+                    emulator->V[x] = emulator->V[y];
                     break;
-                case 0x1:; // 8XY1
-                    printf("8XY1\n");
+                case 0x1:; // 8XY1: Binary OR
+                    printf("8XY1: Binary OR of VX and VY\n");
+                    emulator->V[x] |= emulator->V[y];
                     break;
-                case 0x2: // 8XY2
-                    printf("8XY2\n");
+                case 0x2: // 8XY2: Binary AND
+                    printf("8XY2: Binary AND of VX and VY\n");
+                    emulator->V[x] &= emulator->V[y];
                     break;
-                case 0x3:; // 8XY3
-                    printf("8XY3\n");
+                case 0x3:; // 8XY3: Binary XOR
+                    printf("8XY3: Binary XOR of VX and VY\n");
+                    emulator->V[x] ^= emulator->V[y];
                     break;
-                case 0x4: // 8XY4
-                    printf("8XY4\n");
+                case 0x4: // 8XY4: Add
+                    printf("8XY4: Adding VX and VY\n");
+                    if ((emulator->V[x] + emulator->V[y]) > 0xFF) {
+                        emulator->V[0xF] = 1;
+                    } else {
+                        emulator->V[0xF] = 0;
+                    }
+                    emulator->V[x] += emulator->V[y];
                     break;
-                case 0x5:; // 8XY5
-                    printf("8XY5\n");
+                case 0x5:; // 8XY5: Subtract VY from VX
+                    printf("8XY5: Subtracting VY from VX\n");
+                    if (emulator->V[x] > emulator->V[y]) {
+                        emulator->V[0xF] = 1;
+                    } else {
+                        emulator->V[0xF] = 0;
+                    }
+                    emulator->V[x] -= emulator->V[y];
                     break;
-                case 0x6: // 8XY6
-                    printf("8XY6\n");
+                case 0x6: // 8XY6: Shift right
+                    printf("8XY6: Shifting right\n");
+                    emulator->V[x] = emulator->V[y];
+                    uint8_t shft_r = emulator->V[x] & 0x000F;
+                    emulator->V[x] >>= 1;
+                    if (shft_r == 1) {
+                        emulator->V[0xF] = 1;
+                    } else {
+                        emulator->V[0xF] = 0;
+                    }
                     break;
-                case 0x7:; // 8XY7
-                    printf("8XY7\n");
+                case 0x7:; // 8XY7: Subtract VX from VY
+                    printf("8XY7: Subtracting VX from VY\n");
+                    if (emulator->V[y] > emulator->V[x]) {
+                        emulator->V[0xF] = 1;
+                    } else {
+                        emulator->V[0xF] = 0;
+                    }
+                    emulator->V[x] = emulator->V[y] - emulator->V[x];
                     break;
-                case 0xE:; // 8XYE
-                    printf("8XYE\n");
+                case 0xE:; // 8XYE: Shift left
+                    printf("8XYE: Shifting left\n");
+                    emulator->V[x] = emulator->V[y];
+                    uint8_t shft_l = emulator->V[x] & 0x000F;
+                    emulator->V[x] <<= 1;
+                    if (shft_l == 1) {
+                        emulator->V[0xF] = 1;
+                    } else {
+                        emulator->V[0xF] = 0;
+                    }
                     break;
                 default:
                     // This case doesn't exist!
