@@ -26,7 +26,6 @@ add_executable(chipcraft src/main.c
 )
 
 target_link_libraries(chipcraft CHIP8_LIBRARIES)
-target_link_libraries(chipcraft ${SDL2_LIBRARIES})
 
 # Test executables
 add_executable(test_stack_new tests/test_stack_new.c)
@@ -34,9 +33,6 @@ add_executable(test_stack_push tests/test_stack_push.c)
 add_executable(test_stack_pop tests/test_stack_pop.c)
 
 # Link SDL and CHIP8 to the tests
-target_link_libraries(test_stack_new ${SDL2_LIBRARIES} pthread)
-target_link_libraries(test_stack_push ${SDL2_LIBRARIES} pthread)
-target_link_libraries(test_stack_pop ${SDL2_LIBRARIES} pthread)
 target_link_libraries(test_stack_new CHIP8_LIBRARIES pthread)
 target_link_libraries(test_stack_push CHIP8_LIBRARIES pthread)
 target_link_libraries(test_stack_pop CHIP8_LIBRARIES pthread)
