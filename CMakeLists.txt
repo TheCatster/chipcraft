@@ -19,12 +19,14 @@ add_library(CHIP8_LIBRARIES SHARED
         include/log.h
 )
 
+target_link_libraries(CHIP8_LIBRARIES ${SDL2_LIBRARIES})
+
 add_executable(chipcraft src/main.c
         include/main.h
 )
 
-target_link_libraries(chipcraft ${SDL2_LIBRARIES})
 target_link_libraries(chipcraft CHIP8_LIBRARIES)
+target_link_libraries(chipcraft ${SDL2_LIBRARIES})
 
 # Test executables
 add_executable(test_stack_new tests/test_stack_new.c)
