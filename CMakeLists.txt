@@ -10,6 +10,8 @@ include_directories(${SDL2_INCLUDE_DIRS})
 # Enable CTest
 enable_testing()
 
+add_compile_options(-Wextra -Wpedantic -c -Wall -I. -fpic -g -fbounds-check)
+
 add_library(CHIP8_LIBRARIES SHARED
         src/chip8.c
         include/chip8.h
