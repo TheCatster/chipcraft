@@ -83,7 +83,7 @@ void chip8_run(char* file_name) {
   SDL_Renderer* renderer = NULL;
   SDL_Window* window = NULL;
   SDL_Event event;
-  int16_t speed = 20;
+  int16_t speed = 500;
   bool quit = false;
   CHIP8* emulator = chip8_new();
 
@@ -221,11 +221,11 @@ void chip8_run(char* file_name) {
       break;
     }
 
-    if (speed < 0) {
-      speed = 0;
-    } else {
-      SDL_Delay(speed);
-    }
+    /* if (speed < 0) { */
+    /*   speed = 0; */
+    /* } else { */
+    /*   SDL_Delay(speed); */
+    /* } */
 
     uint16_t instruction = chip8_fetch(emulator);
     bool success = chip8_decode_execute(emulator, instruction);
@@ -249,22 +249,23 @@ void chip8_run(char* file_name) {
  * @returns void
  */
 void chip8_load_fonts(CHIP8* emulator) {
-  uint8_t fonts[80] = {0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
-                       0x20, 0x60, 0x20, 0x20, 0x70, // 1
-                       0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
-                       0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
-                       0x90, 0x90, 0xF0, 0x10, 0x10, // 4
-                       0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
-                       0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
-                       0xF0, 0x10, 0x20, 0x40, 0x40, // 7
-                       0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
-                       0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
-                       0xF0, 0x90, 0xF0, 0x90, 0x90, // A
-                       0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
-                       0xF0, 0x80, 0x80, 0x80, 0xF0, // C
-                       0xE0, 0x90, 0x90, 0x90, 0xE0, // D
-                       0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
-                       0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+  uint8_t fonts[80] = {
+      0xF0, 0x90, 0x90, 0x90, 0xF0,  // 0
+      0x20, 0x60, 0x20, 0x20, 0x70,  // 1
+      0xF0, 0x10, 0xF0, 0x80, 0xF0,  // 2
+      0xF0, 0x10, 0xF0, 0x10, 0xF0,  // 3
+      0x90, 0x90, 0xF0, 0x10, 0x10,  // 4
+      0xF0, 0x80, 0xF0, 0x10, 0xF0,  // 5
+      0xF0, 0x80, 0xF0, 0x90, 0xF0,  // 6
+      0xF0, 0x10, 0x20, 0x40, 0x40,  // 7
+      0xF0, 0x90, 0xF0, 0x90, 0xF0,  // 8
+      0xF0, 0x90, 0xF0, 0x10, 0xF0,  // 9
+      0xF0, 0x90, 0xF0, 0x90, 0x90,  // A
+      0xE0, 0x90, 0xE0, 0x90, 0xE0,  // B
+      0xF0, 0x80, 0x80, 0x80, 0xF0,  // C
+      0xE0, 0x90, 0x90, 0x90, 0xE0,  // D
+      0xF0, 0x80, 0xF0, 0x80, 0xF0,  // E
+      0xF0, 0x80, 0xF0, 0x80, 0x80   // F
   };
 
   memcpy(emulator->memory, fonts, 80);
@@ -276,22 +277,14 @@ void chip8_load_fonts(CHIP8* emulator) {
  * @returns void
  */
 void chip8_load_keymap(CHIP8* emulator) {
-  uint16_t keymap[KEYPAD_SIZE][2] = {{SDL_SCANCODE_1, 0x1},
-                                     {SDL_SCANCODE_2, 0x2},
-                                     {SDL_SCANCODE_3, 0x3},
-                                     {SDL_SCANCODE_4, 0xC},
-                                     {SDL_SCANCODE_Q, 0x4},
-                                     {SDL_SCANCODE_W, 0x5},
-                                     {SDL_SCANCODE_E, 0x6},
-                                     {SDL_SCANCODE_R, 0xD},
-                                     {SDL_SCANCODE_A, 0x7},
-                                     {SDL_SCANCODE_S, 0x8},
-                                     {SDL_SCANCODE_D, 0x9},
-                                     {SDL_SCANCODE_F, 0xE},
-                                     {SDL_SCANCODE_Z, 0xA},
-                                     {SDL_SCANCODE_X, 0x0},
-                                     {SDL_SCANCODE_C, 0xB},
-                                     {SDL_SCANCODE_V, 0xF},};
+  uint16_t keymap[KEYPAD_SIZE][2] = {
+      {SDL_SCANCODE_1, 0x1}, {SDL_SCANCODE_2, 0x2}, {SDL_SCANCODE_3, 0x3},
+      {SDL_SCANCODE_4, 0xC}, {SDL_SCANCODE_Q, 0x4}, {SDL_SCANCODE_W, 0x5},
+      {SDL_SCANCODE_E, 0x6}, {SDL_SCANCODE_R, 0xD}, {SDL_SCANCODE_A, 0x7},
+      {SDL_SCANCODE_S, 0x8}, {SDL_SCANCODE_D, 0x9}, {SDL_SCANCODE_F, 0xE},
+      {SDL_SCANCODE_Z, 0xA}, {SDL_SCANCODE_X, 0x0}, {SDL_SCANCODE_C, 0xB},
+      {SDL_SCANCODE_V, 0xF},
+  };
 
   memcpy(emulator->keymap, keymap, KEYPAD_SIZE);
 }
@@ -315,8 +308,8 @@ bool chip8_load_rom(CHIP8* emulator, char* file_name) {
   stat(file_name, &st);
   size_t f_size = st.st_size;
 
-  size_t bytes_read = fread(emulator->memory + 0x200, 1,
-                            sizeof(emulator->memory) - 0x200, fp);
+  size_t bytes_read =
+      fread(emulator->memory + 0x200, 1, sizeof(emulator->memory) - 0x200, fp);
 
   fclose(fp);
 
@@ -335,8 +328,8 @@ bool chip8_load_rom(CHIP8* emulator, char* file_name) {
  * @returns a CHIP-8 instruction
  */
 uint16_t chip8_fetch(CHIP8* emulator) {
-  uint16_t instruction = emulator->memory[emulator->PC] << 8 | emulator->
-                         memory[emulator->PC + 1];
+  uint16_t instruction =
+      emulator->memory[emulator->PC] << 8 | emulator->memory[emulator->PC + 1];
   emulator->PC += 2;
 
   return instruction;
@@ -355,11 +348,12 @@ bool chip8_decode_execute(CHIP8* emulator, uint16_t instruction) {
   uint8_t n = (instruction & 0x000F);
   uint16_t nn = (y << 4) | n;
   uint32_t nnn = (x << 8) | (y << 4) | n;
+  bool flag = false;
 
   switch (category) {
     case 0x0:
       switch (nnn) {
-        case 0x0E0: // 00E0: Clears the screen
+        case 0x0E0:  // 00E0: Clears the screen
           log_info("0x00E0 - Clearing screen\n");
           for (size_t i = 0; i < DISPLAY_HEIGHT; i++) {
             for (size_t j = 0; j < DISPLAY_WIDTH; j++) {
@@ -368,7 +362,7 @@ bool chip8_decode_execute(CHIP8* emulator, uint16_t instruction) {
           }
           emulator->draw_flag = true;
           break;
-        case 0x0EE: // 00EE: Return from subroutine
+        case 0x0EE:  // 00EE: Return from subroutine
           log_info("0x00EE - Returning from subroutine\n");
           uint16_t pc = 0;
 
@@ -381,16 +375,15 @@ bool chip8_decode_execute(CHIP8* emulator, uint16_t instruction) {
           break;
         default:
           // This case doesn't matter for modern CHIP-8 emulators
-          log_info("0x%04X - Unnecessary instruction\n",
-                   instruction);
+          log_info("0x%04X - Unnecessary instruction\n", instruction);
           break;
       }
       break;
-    case 0x1: // 1NNN: Jump
+    case 0x1:  // 1NNN: Jump
       log_info("0x1NNN - Jumping to 0x%04X\n", nnn);
       emulator->PC = nnn;
       break;
-    case 0x2: // 0x2NNN: Call a subroutine
+    case 0x2:  // 0x2NNN: Call a subroutine
       log_info("0x2NNN - Calling a subroutine\n");
       bool push_res = stack_push(emulator->stack, emulator->PC);
       if (push_res == false) {
@@ -399,71 +392,74 @@ bool chip8_decode_execute(CHIP8* emulator, uint16_t instruction) {
 
       emulator->PC = nnn;
       break;
-    case 0x3: // 0x3XNN: Skip if VX equals NN
+    case 0x3:  // 0x3XNN: Skip if VX equals NN
       log_info("0x3XNN - Skipping if VX equals NN\n");
       if (emulator->V[x] == nn) {
         emulator->PC += 2;
       }
       break;
-    case 0x4: // 0x4XNN: Skip if VX does not equal NN
+    case 0x4:  // 0x4XNN: Skip if VX does not equal NN
       log_info("0x4XNN - Skipping if VX does not equal NN\n");
       if (emulator->V[x] != nn) {
         emulator->PC += 2;
       }
       break;
-    case 0x5: // 0x5XY0: Skip if VX equals VY
+    case 0x5:  // 0x5XY0: Skip if VX equals VY
       log_info("0x5XY0 - Skipping if VX equals VY\n");
       if (emulator->V[x] == emulator->V[y]) {
         emulator->PC += 2;
       }
       break;
-    case 0x6: // 0x6XNN: Set VX to NN
+    case 0x6:  // 0x6XNN: Set VX to NN
       log_info("0x6XNN - Setting VX to NN\n");
       emulator->V[x] = nn;
       break;
-    case 0x7: // 0x7XNN: Add NN to VX
+    case 0x7:  // 0x7XNN: Add NN to VX
       log_info("0x7XNN - Adding NN to VX\n");
       emulator->V[x] += nn;
       break;
     case 0x8:
       switch (n) {
-        case 0x0: // 8XY0: Set VX to VY
+        case 0x0:  // 8XY0: Set VX to VY
           log_info("8XY0: Setting VX to VY\n");
           emulator->V[x] = emulator->V[y];
           break;
-        case 0x1: // 8XY1: Binary OR
+        case 0x1:  // 8XY1: Binary OR
           log_info("8XY1: Binary OR of VX and VY\n");
           emulator->V[x] |= emulator->V[y];
           break;
-        case 0x2: // 8XY2: Binary AND
+        case 0x2:  // 8XY2: Binary AND
           log_info("8XY2: Binary AND of VX and VY\n");
           emulator->V[x] &= emulator->V[y];
           break;
-        case 0x3: // 8XY3: Binary XOR
+        case 0x3:  // 8XY3: Binary XOR
           log_info("8XY3: Binary XOR of VX and VY\n");
           emulator->V[x] ^= emulator->V[y];
           break;
-        case 0x4: // 8XY4: Add
+        case 0x4:  // 8XY4: Add
           log_info("8XY4: Adding VX and VY\n");
+          flag = (emulator->V[x] + emulator->V[y]) > 0xFF;
           emulator->V[x] += emulator->V[y];
-          if ((emulator->V[x] + emulator->V[y]) > 0xFF) {
+          if (flag == true) {
             emulator->V[0xF] = 1;
           } else {
             emulator->V[0xF] = 0;
           }
           break;
-        case 0x5: // 8XY5: Subtract VY from VX
+        case 0x5:  // 8XY5: Subtract VY from VX
           log_info("8XY5: Subtracting VY from VX\n");
-          emulator->V[0xF] = 1;
+          flag = emulator->V[x] >= emulator->V[y];
           emulator->V[x] -= emulator->V[y];
-          if (emulator->V[x] < emulator->V[y]) {
+          if (flag == true) {
+            emulator->V[0xF] = 1;
+          } else {
             emulator->V[0xF] = 0;
           }
           break;
-        case 0x6: // 8XY6: Shift right
+        case 0x6:  // 8XY6: Shift right
           log_info("8XY6: Shifting right\n");
+          const uint8_t shft_r = (emulator->V[y] & 0x0001) > 0;
           emulator->V[x] = emulator->V[y];
-          const uint8_t shft_r = emulator->V[x] & 0x000F;
           emulator->V[x] >>= 1;
           if (shft_r == 1) {
             emulator->V[0xF] = 1;
@@ -471,19 +467,20 @@ bool chip8_decode_execute(CHIP8* emulator, uint16_t instruction) {
             emulator->V[0xF] = 0;
           }
           break;
-        case 0x7: // 8XY7: Subtract VX from VY
+        case 0x7:  // 8XY7: Subtract VX from VY
           log_info("8XY7: Subtracting VX from VY\n");
+          flag = emulator->V[y] >= emulator->V[x];
           emulator->V[x] = emulator->V[y] - emulator->V[x];
-          if (emulator->V[y] > emulator->V[x]) {
+          if (flag == true) {
             emulator->V[0xF] = 1;
           } else {
             emulator->V[0xF] = 0;
           }
           break;
-        case 0xE: // 8XYE: Shift left
+        case 0xE:  // 8XYE: Shift left
           log_info("8XYE: Shifting left\n");
+          const uint8_t shft_l = (emulator->V[y] & 0x80) > 0;
           emulator->V[x] = emulator->V[y];
-          const uint8_t shft_l = emulator->V[x] & 0x000F;
           emulator->V[x] <<= 1;
           if (shft_l == 1) {
             emulator->V[0xF] = 1;
@@ -497,29 +494,29 @@ bool chip8_decode_execute(CHIP8* emulator, uint16_t instruction) {
           return false;
       }
       break;
-    case 0x9: // 9XY0: Skip if VX does not equal VY
+    case 0x9:  // 9XY0: Skip if VX does not equal VY
       log_info("0x9XY0 - Skipping if VX does not equal VY\n");
       if (emulator->V[x] != emulator->V[y]) {
         emulator->PC += 2;
       }
       break;
-    case 0xA: // ANNN: Set index register
+    case 0xA:  // ANNN: Set index register
       log_info("0xANNN - Setting index register to NNN\n");
       emulator->I = nnn;
       break;
-    case 0xB: // BNNN: Jump with offset
+    case 0xB:  // BNNN: Jump with offset
       log_info("0xBNNN - Jumping with offset\n");
       emulator->PC += nnn + emulator->V[0];
       break;
-    case 0xC: // CXNN: Random
+    case 0xC:  // CXNN: Random
       log_info("0xCXNN - Generating random number\n");
       uint8_t random = rand() % nn + 1;
-    // Rand has limited randomness, but it's okay for this application
+      // Rand has limited randomness, but it's okay for this application
       emulator->V[x] = nn & random;
       break;
-    case 0xD: // DXYN: Display
+    case 0xD:  // DXYN: Display
       log_info("0xDXYN - Displaying sprite\n");
-    // This can be done with modulo, but bitwise AND should be the same speed or better in most cases
+      // This can be done with modulo, but bitwise AND should be the same speed or better in most cases
       uint16_t xc = emulator->V[x] & 63;
       uint16_t yc = emulator->V[y] & 31;
       emulator->V[0xF] = 0;
@@ -528,14 +525,12 @@ bool chip8_decode_execute(CHIP8* emulator, uint16_t instruction) {
         uint16_t pixel = emulator->memory[emulator->I + row];
         for (size_t bit = 0; bit < 8; bit++) {
           if ((pixel & (0x80 >> bit)) != 0) {
-            if (emulator->display[xc + bit][
-                  yc + row] == true) {
+            if (emulator->display[xc + bit][yc + row] == true) {
               emulator->V[0xF] = 1;
             }
 
             // set pixel value by using XOR
-            emulator->display[xc + bit][yc + row] ^=
-                1;
+            emulator->display[xc + bit][yc + row] ^= 1;
           }
         }
       }
@@ -543,13 +538,13 @@ bool chip8_decode_execute(CHIP8* emulator, uint16_t instruction) {
       break;
     case 0xE:
       switch (y) {
-        case 0x9: // EX9E: Skip if key is pressed
+        case 0x9:  // EX9E: Skip if key is pressed
           log_info("EX9E: Skipping if key is pressed\n");
           if (emulator->keypad[emulator->V[x]] == true) {
             emulator->PC += 2;
           }
           break;
-        case 0xA: // EXA1: Skip if key is not pressed
+        case 0xA:  // EXA1: Skip if key is not pressed
           log_info("EXA1: Skipping if key is not pressed\n");
           if (emulator->keypad[emulator->V[x]] == false) {
             emulator->PC += 2;
@@ -563,11 +558,11 @@ bool chip8_decode_execute(CHIP8* emulator, uint16_t instruction) {
       break;
     case 0xF:
       switch (nn) {
-        case 0x07: // FX07: Set VX to the delay timer
+        case 0x07:  // FX07: Set VX to the delay timer
           log_info("FX07: Setting VX to the delay timer\n");
           emulator->V[x] = emulator->delay_timer;
           break;
-        case 0x0A: // FX0A: Wait for key
+        case 0x0A:  // FX0A: Wait for key
           log_info("FX0A: Waiting for keypress\n");
           for (size_t i = 0; i < KEYPAD_SIZE; i++) {
             if (emulator->keypad[i]) {
@@ -577,26 +572,26 @@ bool chip8_decode_execute(CHIP8* emulator, uint16_t instruction) {
           }
           emulator->PC -= 2;
           break;
-        case 0x15: // FX15: Set the delay timer to VX
+        case 0x15:  // FX15: Set the delay timer to VX
           log_info("FX15: Setting the delay timer to VX\n");
           emulator->delay_timer = emulator->V[x];
           break;
-        case 0x18: // FX18: Set the sound timer to VX
+        case 0x18:  // FX18: Set the sound timer to VX
           log_info("FX18: Setting the sound timer to VX\n");
           emulator->sound_timer = emulator->V[x];
           break;
-        case 0x1E: // FX1E: Add VX to I
+        case 0x1E:  // FX1E: Add VX to I
           log_info("FX1E: Adding VX to I\n");
           emulator->I += emulator->V[x];
           if (emulator->I + emulator->V[x] > 0x1000) {
             emulator->V[0xF] = 1;
           }
           break;
-        case 0x29: // FX29: Set I to font character address
+        case 0x29:  // FX29: Set I to font character address
           log_info("FX29: Setting I to a character address\n");
           emulator->I = emulator->V[x];
           break;
-        case 0x33: // FX33: Convert hex to decimal
+        case 0x33:  // FX33: Convert hex to decimal
           log_info("FX33: Converting hex to decimal\n");
           const uint8_t digit_three = emulator->V[x] % 10;
           const uint8_t digit_two = (emulator->V[x] / 10) % 10;
@@ -606,20 +601,16 @@ bool chip8_decode_execute(CHIP8* emulator, uint16_t instruction) {
           emulator->memory[emulator->I + 1] = digit_two;
           emulator->memory[emulator->I + 2] = digit_three;
           break;
-        case 0x55: // FX55: Store variable registers in memory
-          log_info(
-              "FX55: Storing variable registers in memory\n");
+        case 0x55:  // FX55: Store variable registers in memory
+          log_info("FX55: Storing variable registers in memory\n");
           for (size_t i = 0; i <= x; i++) {
-            emulator->memory[emulator->I + i] = emulator->V[
-              i];
+            emulator->memory[emulator->I + i] = emulator->V[i];
           }
           break;
-        case 0x65: // FX65: Store memory in variable registers
-          log_info(
-              "FX65: Storing memory in variable registers\n");
+        case 0x65:  // FX65: Store memory in variable registers
+          log_info("FX65: Storing memory in variable registers\n");
           for (size_t i = 0; i <= x; i++) {
-            emulator->V[i] = emulator->memory[
-              emulator->I + i];
+            emulator->V[i] = emulator->memory[emulator->I + i];
           }
           break;
         default:
@@ -651,8 +642,7 @@ void chip8_draw(CHIP8* emulator, SDL_Texture* screen, SDL_Renderer* renderer) {
     for (x = 0; x < DISPLAY_WIDTH; x++) {
       for (y = 0; y < DISPLAY_HEIGHT; y++) {
         if (emulator->display[x][y] == true) {
-          pixels[(x) + ((y) * DISPLAY_WIDTH)] =
-              UINT32_MAX;
+          pixels[(x) + ((y)*DISPLAY_WIDTH)] = UINT32_MAX;
         }
       }
     }
